@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Analytics Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>User Analytics for </h1>
+  <select id="yearSelect" onchange="fetchData()">
+    <% if (result && result.length > 0) { %>
+    <% result.forEach((item, index )=> { %>
+      <option value="<%= item.year %>" <%= index === 0 ? 'selected' : '' %>><%= item.year %></option>
+    <% }); %>
+    <% } else { %> 
+      <option>No data available</option>
+       <% } %>
+  </select>
+  <div>
+  <canvas id="analyticsChart"></canvas>
+</div>
+ 
+  <!-- <script>
+    let chart;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const yearSelect = document.getElementById('yearSelect');
+      if(yearSelect.options.length>0 &&yearSelect.value){
+        fetchData();
+      }
+    });
+    function fetchData() {
+      const yearSelect = document.getElementById('yearSelect').value;
+    console.log(yearSelect)
+      // const selectedYear = yearSelect.options.value ;
+      // console.log(selectedYear)
+      fetch(`/api/data?year=${yearSelect}`)
+        .then(response =>{
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log("response===",response)
+        return response;
+      })
+        .then(results => {  
+          if (!results || results.length === 0) {
+          alert('No data available for the selected year');
+          if (chart) 
+          chart.destroy();
+          return; 
+        }
+        console.log(results)
+          const month = results.map(item => item.month);
+          const count = results.map(item => item.count);
+          renderChart(month, count);
+        })
+        .catch(error =>{
+          console.error('Error fetching data:', error);
+          alert("fails");
+        });
+      }
+
+    function renderChart(month, count) {
+      const ctx = document.getElementById('analyticsChart').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: month,
+          datasets: [{
+            label: 'Users',
+            data: count,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio:false,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+    
+  </script> -->
+
+  <script>
+    let chart;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const yearSelect = document.getElementById('yearSelect');
+      if (yearSelect.options.length > 0 && yearSelect.value) {
+        fetchData();
+      }
+    });
+
+    function fetchData() {
+      const selectedYear = document.getElementById('yearSelect').value;
+      console.log(selectedYear);
+      
+      fetch(`/api/fetchData?year=${selectedYear}`)
+        .then(response => {
+          
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();  // Parse JSON properly
+        })
+        .then(results => {
+          if (!results || results.length === 0) {
+            alert('No data available for the selected year');
+            if (chart) chart.destroy();
+            return;
+          }
+          const month = results.map(item => item.month);
+          const count = results.map(item => item.count);
+          renderChart(month, count);
+        })
+        // .catch(error => {
+        //   console.error('Error fetching data:', error);
+        //   alert("Failed to fetch data");
+        // });
+    }
+
+    function renderChart(month, count) {
+      const ctx = document.getElementById('analyticsChart').getContext('2d');
+      
+      if (chart) chart.destroy();
+      
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: month,
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+          datasets: [{
+            label: 'Users',
+            data: count,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+</script>
+</body>
+</html>
